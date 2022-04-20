@@ -19,7 +19,7 @@ app.use(cors());
 app.get("/photos", async (req, res) => {
   const albumId = req.query.albumId;
 
-  const photos = await redisClient.get("photos");
+  const photos = await redisClient.get(`photos?albumId=${albumId}`);
 
   if (photos != null) return res.json(JSON.parse(photos));
 
@@ -28,7 +28,11 @@ app.get("/photos", async (req, res) => {
     { params: { albumId } }
   );
 
-  redisClient.setEx("photos", DEFAULT_EXPIRATION, JSON.stringify(data));
+  redisClient.setEx(
+    `photos?albumId=${albumId}`,
+    DEFAULT_EXPIRATION,
+    JSON.stringify(data)
+  );
 
   res.json(data);
 });
